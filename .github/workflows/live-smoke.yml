@@ -1,0 +1,45 @@
+name: Comprobación pública LIVE
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Esperar una respuesta pública válida
+        env:
+          URL: https://cobrafirme-py.onrender.com
+        shell: bash
+        run: |
+          set -euo pipefail
+          valid=0
+          for attempt in $(seq 1 24); do
+            echo "Intento HTTP $attempt / 24"
+            if curl --retry 1 --max-time 15 --fail --location --silent --show-error "$URL/" -o /tmp/cobra_home.html && grep -q 'CobráFirme' /tmp/cobra_home.html; then
+              valid=1
+              break
+            fi
+            sleep 10
+          done
+          test "$valid" = 1
+      - name: Validar rutas y checklist
+        env:
+          URL: https://cobrafirme-py.onrender.com
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --max-time 20 --fail --location --silent --show-error "$URL/migracion-ueno/" -o /tmp/cobra_ueno.html
+          grep -q 'Organizá tus próximos pasos' /tmp/cobra_ueno.html
+          curl --max-time 20 --fail --location --silent --show-error "$URL/privacidad/" -o /tmp/cobra_privacidad.html
+          grep -q 'Política de privacidad' /tmp/cobra_privacidad.html
+          curl --max-time 20 --fail --location --silent --show-error "$URL/recursos/checklist-cobros.csv" -o /tmp/cobra_checklist.csv
+          grep -q 'Etapa;Tarea;Estado' /tmp/cobra_checklist.csv
+          curl --max-time 20 --fail --location --silent --show-error "$URL/robots.txt" -o /tmp/cobra_robots.txt
+          grep -qi 'User-agent' /tmp/cobra_robots.txt
+          curl --max-time 20 --fail --location --silent --show-error "$URL/sitemap.xml" -o /tmp/cobra_sitemap.xml
+          grep -q 'cobrafirme-py.onrender.com' /tmp/cobra_sitemap.xml
+          echo 'Smoke HTTP: páginas, recurso y SEO verificados.'
