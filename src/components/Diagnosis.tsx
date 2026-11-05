@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowRight, ClipboardCheck, Copy, CreditCard, FileCheck2, ListChecks, Megaphone, QrCode, RefreshCw, ShieldAlert, Wallet } from 'lucide-react';
 import { getIssue, issues, planAsText, type IssueId } from '@/lib/diagnostico';
+import { trackEvent } from '@/lib/analytics';
 
 const icons = [Wallet, QrCode, CreditCard, Megaphone, ListChecks];
 
@@ -12,7 +13,7 @@ export function Diagnosis() {
   const issue = selected ? getIssue(selected) : undefined;
   async function copyPlan() {
     if (!issue) return;
-    try { await navigator.clipboard.writeText(planAsText(issue)); setCopied(true); }
+    try { await navigator.clipboard.writeText(planAsText(issue)); setCopied(true); trackEvent('plan_copied', issue.id); }
     catch { setCopied(false); }
   }
 
@@ -25,7 +26,7 @@ export function Diagnosis() {
     <div className="issue-grid" role="group" aria-label="Elegí tu problema de cobro">
       {issues.map((item, i) => {
         const Icon = icons[i];
-        return <button type="button" key={item.id} onClick={() => { setSelected(item.id); setCopied(false); }} aria-pressed={selected === item.id} className={`issue-option ${selected === item.id ? 'issue-selected' : ''}`}>
+        return <button type="button" key={item.id} onClick={() => { setSelected(item.id); setCopied(false); trackEvent('diagnosis_selected',item.id); }} aria-pressed={selected === item.id} className={`issue-option ${selected === item.id ? 'issue-selected' : ''}`}>
           <span className="issue-icon"><Icon size={21} strokeWidth={1.8} aria-hidden="true"/></span>
           <span>{item.title}</span>
           <ArrowRight size={17} className="issue-arrow" aria-hidden="true"/>

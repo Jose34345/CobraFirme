@@ -2,7 +2,7 @@
 
 **Tus cobros en orden. Tu negocio en marcha.**
 
-Sitio comercial mobile-first para pequeños comercios de Paraguay: guía gratuita y diagnóstico para transferencias, QR, medios alternativos, avisos a clientes y conciliación. Incluye guía contextual para comercios afectados por el procedimiento de resolución de Ueno Bank, según comunicados publicados por el Banco Central del Paraguay el **3 y 4 de noviembre de 2026**.
+Sitio comercial mobile-first para pequeños comercios de Paraguay: guía gratuita y diagnóstico para transferencias, QR, medios alternativos, avisos a clientes y conciliación. Incluye guía contextual para comercios afectados por el procedimiento de resolución de Ueno Bank, según comunicados publicados por el Banco Central del Paraguay el **3, 4 y 5 de noviembre de 2026**.
 
 > **Servicio independiente.** CobráFirme no es un banco, no procesa fondos de clientes y no está afiliado a Ueno, BCP ni Bancard. No recopila contraseñas, PIN, OTP ni tokens bancarios.
 
@@ -14,12 +14,13 @@ Sitio comercial mobile-first para pequeños comercios de Paraguay: guía gratuit
 | Diagnóstico de 5 problemas y guía copiable | Implementado; funciona en navegador sin registro |
 | Guía Ueno con fuentes oficiales | Implementada; revisión de hechos **05/11/2026** |
 | Mensaje para clientes y checklist CSV gratuito | Implementados |
-| Precios de kits US$ 9,99 / 14,99 | Visibles; **compra bloqueada** por defecto |
+| Medición de eventos con consentimiento | Código implementado; **requiere token propio de PostHog y comprobación LIVE** |
+| Precio del Kit Integral US$ 14,99 | Visible; **compra bloqueada** por defecto |
 | WhatsApp / email | Opcionales; solo se muestran si hay datos reales configurados |
 | Formulario de contactos | Opcional; únicamente si se configura un endpoint Formspree válido |
 | Confirmación automática de pago / entrega privada | **NO implementadas** (requieren procesador, webhook/servidor y prueba real) |
 | Identidad del prestador y términos finales | **Pendientes de completar / revisar** |
-| Hosting Render (sitio estático) | **LIVE**: https://cobrafirme-py.onrender.com/; rutas y recursos verificados con GitHub Actions |
+| Dominio y despliegue LIVE | Render estático en `https://cobrafirme-py.onrender.com` (verificar último deploy después de cada cambio) |
 
 ## Desarrollo local
 
@@ -52,23 +53,20 @@ Copiar `.env.example` a `.env.local` y configurar únicamente valores comprobado
 | `NEXT_PUBLIC_SUPPORT_EMAIL` | Correo de atención real |
 | `NEXT_PUBLIC_LEGAL_NAME` | Identidad legal del prestador; obligatoria antes de ventas |
 | `NEXT_PUBLIC_FORMSPREE_ENDPOINT` | URL real `https://formspree.io/f/...` si se configura la recepción de leads |
-| `NEXT_PUBLIC_CHECKOUT_BASIC_URL` | Checkout del kit básico validado |
-| `NEXT_PUBLIC_CHECKOUT_PRO_URL` | Checkout del kit Pro validado |
+| | `NEXT_PUBLIC_CHECKOUT_PRO_URL` | Checkout del kit Pro validado |
+| `NEXT_PUBLIC_POSTHOG_KEY` | Token **público** del proyecto PostHog; sin él no hay medición activa |
+| `NEXT_PUBLIC_POSTHOG_HOST` | Host `https://us.i.posthog.com` o `https://eu.i.posthog.com` |
 | `NEXT_PUBLIC_PAYMENTS_VERIFIED` | `false` por defecto; **no cambiar a true sin validar pagos y entrega** |
 
 **Importante**: habilitar un enlace de checkout externo no implementa por sí solo confirmación del pago, emisión de Factura E ni entrega privada. La activación comercial requiere esa integración y validaciones adicionales. Esta versión no simula compras aprobadas.
 
-## Despliegue actual
+## Analítica y evaluación comercial
 
-**URL LIVE:** https://cobrafirme-py.onrender.com/  
-**Plataforma:** Render Static Site, servicio `srv-dbmen56tlv9c7385pbng` en `My Workspace`, distinto del espacio `litoraltrace`.  
-**Código:** rama `main`, con auto-deploy habilitado y validaciones en `.github/workflows/ci.yml` y `.github/workflows/live-smoke.yml`.  
-**URL canónica:** `NEXT_PUBLIC_SITE_URL` configurada en Render para generar sitemap SEO.  
-**Estado:** versión informativa y diagnósticos disponibles; **ventas y recepción de leads pendientes de configurar**.
+La instrumentación existe pero **no registra visitas todavía** si no hay token de PostHog en Render. Cada visitante puede aceptar o rechazar la medición, sin perder la guía. No se capturan identidades, datos bancarios, URL completas ni grabaciones. Conectá un proyecto PostHog propio y configurá su token público como variable de build de Render, luego desplegá; comprobá un evento real en Live Events. Para estrategia, métricas y alternativas publicitarias, ver [`docs/VALIDACION_COMERCIAL.md`](docs/VALIDACION_COMERCIAL.md).
 
-### Opciones alternativas de despliegue
+## Publicar gratis
 
-### Opción A — Vercel (opcional, no hace falta para la versión actual)
+### Opción A — Vercel (recomendada para Next.js)
 
 1. Entrar a [Vercel](https://vercel.com) y conectar GitHub.
 2. Elegir el repositorio `Jose34345/CobraFirme`.
@@ -78,7 +76,7 @@ Copiar `.env.example` a `.env.local` y configurar únicamente valores comprobado
 6. Agregar `NEXT_PUBLIC_SITE_URL` con **la URL que Vercel realmente asigne**; volver a desplegar para regenerar sitemap y metadatos.
 7. Probar 360 px, 390 px, 768 px y escritorio, cinco diagnósticos, copia y CSV.
 
-### Opción B — GitHub Pages (opcional)
+### Opción B — GitHub Pages
 
 Se incluye `.github/workflows/pages.yml` con ejecución manual (`workflow_dispatch`) para exportar y desplegar a Pages. Antes, en **Settings → Pages**, elegir **GitHub Actions** como fuente. El workflow compila con prefijo `/CobraFirme`, necesario para el proyecto en `github.io`; la URL final es la que GitHub muestre tras un despliegue exitoso. Los enlaces internos de Next.js usan su `basePath`.
 
@@ -86,6 +84,7 @@ No habilitar simultáneamente dos URLs canónicas. Si se usa GitHub Pages, se de
 
 ## Fuentes de los contenidos
 
+- [BCP, 05/11/2026 — Primer grupo de pagos de garantía](https://www.bcp.gov.py/web/institucional/w/comunicado-sobre-inicio-de-pagos-de-garantia-a-los-depositantes-de-ueno-bank-sa)
 - [BCP, 03/11/2026 — Resolución de Ueno Bank](https://www.bcp.gov.py/web/institucional/w/banco-central-inicia-el-procedimiento-de-resolucion-de-ueno-bank)
 - [BCP, 04/11/2026 — Alias registrados en Ueno](https://www.bcp.gov.py/en/web/institucional/w/comunicado-sobre-uso-de-alias-registrados-en-ueno-bank-sa)
 - [BCP, 04/11/2026 — Intermitencias en apps bancarias](https://www.bcp.gov.py/en/web/institucional/w/comunicado-sobre-intermitencias-en-aplicaciones-moviles-de-entidades-bancarias)
@@ -96,7 +95,7 @@ No habilitar simultáneamente dos URLs canónicas. Si se usa GitHub Pages, se de
 
 ## Reglas para lanzamiento comercial (GO/NO-GO)
 
-- **GO para versión informativa gratuita:** CI y smoke HTTP públicos en verde. La verificación visual detallada en dispositivos reales queda pendiente.
+- **GO para versión informativa gratuita** tras CI verde, verificación visual y enlaces oficiales comprobados.
 - **NO-GO para pagos** hasta completar identidad del prestador, alta fiscal y facturación de exportación, evaluación tributaria transfronteriza, aceptación real del método de pago desde Paraguay, confirmación de pago en servidor, entrega privada del kit, procedimiento de reembolso y una prueba end-to-end.
 - **NO-GO para formularios** sin URL de contacto real, política de privacidad revisada y configuración de recepción y conservación de datos.
 - No guardar materiales pagos en este repo **público**: cualquier archivo que se suba aquí puede ser leído/descargado por cualquier persona. Mantener productos privados en un almacenamiento con control de acceso, y emitir enlaces de descarga solo después de un pago validado.

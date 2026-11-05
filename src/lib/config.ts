@@ -9,7 +9,6 @@ export const site = {
   legalName: process.env.NEXT_PUBLIC_LEGAL_NAME ?? '',
   formspree: process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? '',
   paymentVerified: process.env.NEXT_PUBLIC_PAYMENTS_VERIFIED === 'true',
-  checkoutBasic: process.env.NEXT_PUBLIC_CHECKOUT_BASIC_URL ?? '',
   checkoutPro: process.env.NEXT_PUBLIC_CHECKOUT_PRO_URL ?? '',
 } as const;
 
@@ -20,6 +19,7 @@ export const official = {
   news: 'https://www.bcp.gov.py/en/noticias',
   bancard: 'https://comercios.bancard.com.py/productos/ventas-qr',
   bancardSupport: 'https://www.bancard.com.py/soporte',
+  guaranteeUpdate: 'https://www.bcp.gov.py/web/institucional/w/comunicado-sobre-inicio-de-pagos-de-garantia-a-los-depositantes-de-ueno-bank-sa',
 } as const;
 
 export function whatsappLink(message: string): string | null {
@@ -35,7 +35,7 @@ export function validCheckoutUrl(value: string): boolean {
 }
 
 /** Sin verificación del operador se oculta el botón de compra; ninguna compra se confirma en el navegador. */
-export function checkoutLink(tier: 'basic' | 'pro'): string | null {
-  const target = tier === 'basic' ? site.checkoutBasic : site.checkoutPro;
+export function checkoutLink(tier: 'pro'): string | null {
+  const target = site.checkoutPro;
   return site.paymentVerified && validCheckoutUrl(target) ? target : null;
 }

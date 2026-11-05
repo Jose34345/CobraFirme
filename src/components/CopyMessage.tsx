@@ -2,17 +2,19 @@
 import { useState } from 'react';
 import { Copy, Share2 } from 'lucide-react';
 import { customerMessage } from '@/lib/diagnostico';
+import { trackEvent } from '@/lib/analytics';
 
 export function CopyMessage() {
   const [copyState, setCopyState] = useState(false);
   const [shareState, setShareState] = useState(false);
-  async function copy() { try { await navigator.clipboard.writeText(customerMessage); setCopyState(true); } catch { setCopyState(false); } }
+  async function copy() { try { await navigator.clipboard.writeText(customerMessage); setCopyState(true); trackEvent('message_copied'); } catch { setCopyState(false); } }
   async function share() {
     const url = window.location.href;
     const message = 'Guía gratuita para ordenar tus medios de cobro en Paraguay — CobráFirme';
     try {
       if (navigator.share) await navigator.share({ title: 'CobráFirme', text: message, url });
       else { await navigator.clipboard.writeText(`${message}: ${url}`); setShareState(true); }
+      trackEvent('guide_shared');
     } catch { /* El usuario puede cancelar la hoja de compartir. */ }
   }
   return <div className="copy-card">
