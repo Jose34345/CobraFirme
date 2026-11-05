@@ -19,7 +19,7 @@ Sitio comercial mobile-first para pequeños comercios de Paraguay: guía gratuit
 | Formulario de contactos | Opcional; únicamente si se configura un endpoint Formspree válido |
 | Confirmación automática de pago / entrega privada | **NO implementadas** (requieren procesador, webhook/servidor y prueba real) |
 | Identidad del prestador y términos finales | **Pendientes de completar / revisar** |
-| Dominio y despliegue LIVE | **Pendientes de configuración externa y verificación** |
+| Hosting Render (sitio estático) | **LIVE**: https://cobrafirme-py.onrender.com/; rutas y recursos verificados con GitHub Actions |
 
 ## Desarrollo local
 
@@ -58,9 +58,17 @@ Copiar `.env.example` a `.env.local` y configurar únicamente valores comprobado
 
 **Importante**: habilitar un enlace de checkout externo no implementa por sí solo confirmación del pago, emisión de Factura E ni entrega privada. La activación comercial requiere esa integración y validaciones adicionales. Esta versión no simula compras aprobadas.
 
-## Publicar gratis
+## Despliegue actual
 
-### Opción A — Vercel (recomendada para Next.js)
+**URL LIVE:** https://cobrafirme-py.onrender.com/  
+**Plataforma:** Render Static Site, servicio `srv-dbmen56tlv9c7385pbng` en `My Workspace`, distinto del espacio `litoraltrace`.  
+**Código:** rama `main`, con auto-deploy habilitado y validaciones en `.github/workflows/ci.yml` y `.github/workflows/live-smoke.yml`.  
+**URL canónica:** `NEXT_PUBLIC_SITE_URL` configurada en Render para generar sitemap SEO.  
+**Estado:** versión informativa y diagnósticos disponibles; **ventas y recepción de leads pendientes de configurar**.
+
+### Opciones alternativas de despliegue
+
+### Opción A — Vercel (opcional, no hace falta para la versión actual)
 
 1. Entrar a [Vercel](https://vercel.com) y conectar GitHub.
 2. Elegir el repositorio `Jose34345/CobraFirme`.
@@ -70,7 +78,7 @@ Copiar `.env.example` a `.env.local` y configurar únicamente valores comprobado
 6. Agregar `NEXT_PUBLIC_SITE_URL` con **la URL que Vercel realmente asigne**; volver a desplegar para regenerar sitemap y metadatos.
 7. Probar 360 px, 390 px, 768 px y escritorio, cinco diagnósticos, copia y CSV.
 
-### Opción B — GitHub Pages
+### Opción B — GitHub Pages (opcional)
 
 Se incluye `.github/workflows/pages.yml` con ejecución manual (`workflow_dispatch`) para exportar y desplegar a Pages. Antes, en **Settings → Pages**, elegir **GitHub Actions** como fuente. El workflow compila con prefijo `/CobraFirme`, necesario para el proyecto en `github.io`; la URL final es la que GitHub muestre tras un despliegue exitoso. Los enlaces internos de Next.js usan su `basePath`.
 
@@ -88,7 +96,7 @@ No habilitar simultáneamente dos URLs canónicas. Si se usa GitHub Pages, se de
 
 ## Reglas para lanzamiento comercial (GO/NO-GO)
 
-- **GO para versión informativa gratuita** tras CI verde, verificación visual y enlaces oficiales comprobados.
+- **GO para versión informativa gratuita:** CI y smoke HTTP públicos en verde. La verificación visual detallada en dispositivos reales queda pendiente.
 - **NO-GO para pagos** hasta completar identidad del prestador, alta fiscal y facturación de exportación, evaluación tributaria transfronteriza, aceptación real del método de pago desde Paraguay, confirmación de pago en servidor, entrega privada del kit, procedimiento de reembolso y una prueba end-to-end.
 - **NO-GO para formularios** sin URL de contacto real, política de privacidad revisada y configuración de recepción y conservación de datos.
 - No guardar materiales pagos en este repo **público**: cualquier archivo que se suba aquí puede ser leído/descargado por cualquier persona. Mantener productos privados en un almacenamiento con control de acceso, y emitir enlaces de descarga solo después de un pago validado.
