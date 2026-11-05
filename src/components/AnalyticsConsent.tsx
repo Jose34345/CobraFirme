@@ -25,6 +25,7 @@ export function AnalyticsConsent() {
     try { localStorage.setItem(ANALYTICS_CONSENT_KEY,next); }
     catch { /* Sin almacenamiento el consentimiento no persiste. */ }
     if (next === 'no') window.posthog?.opt_out_capturing?.();
+    if (next === 'yes' && window.posthog) window.posthog.opt_in_capturing?.();
     setChoice(next);
     setEditing(false);
   }
