@@ -3,7 +3,7 @@ export type AnalyticsEvent = 'diagnosis_selected' | 'plan_copied' | 'message_cop
 export const ANALYTICS_CONSENT_KEY = 'cobrafirme-analytics-consent-v1';
 const allowed = new Set<AnalyticsEvent>(['diagnosis_selected','plan_copied','message_copied','guide_shared','checklist_download','ueno_guide_open','premium_interest','premium_checkout_click']);
 
-type AnonymousPostHog = { capture: (event: string, properties?: Record<string, string>) => void; opt_out_capturing?: () => void; init: (key: string, opts: Record<string, unknown>) => void; _i?: unknown[]; __SV?: number; [key: string]: unknown };
+type AnonymousPostHog = { capture: (event: string, properties?: Record<string, string>) => void; opt_out_capturing?: () => void; opt_in_capturing?: () => void; init: (key: string, opts: Record<string, unknown>) => void; _i?: unknown[]; __SV?: number; [key: string]: unknown };
 declare global { interface Window { posthog?: AnonymousPostHog } }
 export function analyticsConfigured(): boolean {
   return Boolean((process.env.NEXT_PUBLIC_POSTHOG_KEY || '').trim());
@@ -25,7 +25,7 @@ export function loadAnalytics(): void {
   const queue = [] as unknown as unknown[] & AnonymousPostHog;
   queue.__SV = 1;
   queue._i = [];
-  for (const method of ['capture', 'identify', 'opt_out_capturing', 'reset']) {
+  for (const method of ['capture', 'identify', 'opt_out_capturing', 'opt_in_capturing', 'reset']) {
     (queue as unknown as Record<string, unknown>)[method] = (...args: unknown[]) => queue.push([method, ...args]);
   }
   queue.init = (key, options) => {
@@ -51,6 +51,12 @@ export function loadAnalytics(): void {
     disable_web_experiments: true,
     disable_external_dependency_loading: false,
     advanced_disable_decide: true,
-    ip: false,
+    before_send: (payload: { properties?: Record<string, unknown> }) => {
+      if (payload?.properties) {
+        for (const key of ['$current_url', '$referrer', '$referring_domain', '$initial_referrer', '$initial_referring_domain']) delete payload.properties[key];
+        for (const key of Object.keys(payload.properties)) if (key.startsWith('utm_') || key.startsWith('$initial_utm_')) delete payload.properties[key];
+      }
+      return payload;
+    },
   });
 }
