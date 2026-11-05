@@ -1,0 +1,31 @@
+name: Validación CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Pruebas de lógica
+        run: npm run test
+      - name: Revisar tipos
+        run: npm run typecheck
+      - name: Generar sitio estático
+        run: npm run build
+      - name: Comprobar páginas esenciales
+        run: |
+          test -f out/index.html
+          test -f out/migracion-ueno/index.html
+          test -f out/privacidad/index.html
+          test -f out/recursos/checklist-cobros.csv
