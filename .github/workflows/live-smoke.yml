@@ -26,6 +26,14 @@ jobs:
             sleep 10
           done
           test "$valid" = 1
+      - name: Diagnóstico de rutas de Render
+        env:
+          URL: https://cobrafirme-py.onrender.com
+        run: |
+          for path in '/' '/migracion-ueno/' '/migracion-ueno' '/migracion-ueno/index.html' '/privacidad/' '/privacidad' '/privacidad/index.html' '/recursos/checklist-cobros.csv' '/robots.txt' '/sitemap.xml'; do
+            code=$(curl --max-time 15 -L -s -o /dev/null -w '%{http_code}' \"$URL$path\" || true)
+            echo \"$path -> HTTP $code\"
+          done
       - name: Validar rutas y checklist
         env:
           URL: https://cobrafirme-py.onrender.com
