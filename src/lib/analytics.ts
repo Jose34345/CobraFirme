@@ -1,7 +1,7 @@
 /** Analítica de producto: solamente eventos de una lista cerrada, nunca datos bancarios, formularios ni identificadores personales. */
-export type AnalyticsEvent = 'diagnosis_selected' | 'plan_copied' | 'message_copied' | 'guide_shared' | 'checklist_download' | 'ueno_guide_open' | 'premium_interest' | 'premium_checkout_click';
+export type AnalyticsEvent = 'diagnosis_selected' | 'plan_copied' | 'message_copied' | 'guide_shared' | 'checklist_download' | 'ueno_guide_open' | 'premium_interest' | 'premium_checkout_click' | 'saver_orientation_selected';
 export const ANALYTICS_CONSENT_KEY = 'cobrafirme-analytics-consent-v1';
-const allowed = new Set<AnalyticsEvent>(['diagnosis_selected','plan_copied','message_copied','guide_shared','checklist_download','ueno_guide_open','premium_interest','premium_checkout_click']);
+const allowed = new Set<AnalyticsEvent>(['diagnosis_selected','plan_copied','message_copied','guide_shared','checklist_download','ueno_guide_open','premium_interest','premium_checkout_click','saver_orientation_selected']);
 
 type AnonymousPostHog = { capture: (event: string, properties?: Record<string, string>) => void; opt_out_capturing?: () => void; opt_in_capturing?: () => void; init: (key: string, opts: Record<string, unknown>) => void; _i?: unknown[]; __SV?: number; [key: string]: unknown };
 declare global { interface Window { posthog?: AnonymousPostHog } }
@@ -59,4 +59,14 @@ export function loadAnalytics(): void {
       return payload;
     },
   });
+}
+
+/** Categorías cerradas de una encuesta opcional: sin importe, institución, identificación ni texto libre. */
+import {isValidSaverSurvey,type SaverSurvey} from './ahorristas';
+export function trackSaverSurvey(input:SaverSurvey):boolean {
+ if(!isValidSaverSurvey(input)||!analyticsConfigured()||!analyticsAllowed()||typeof window==='undefined')return false;
+ if(!window.posthog)loadAnalytics();
+ if(!window.posthog)return false;
+ window.posthog.capture('saver_survey_submitted',{problem:input.problem,portal:input.portal,suspicious:input.suspicious});
+ return true;
 }
