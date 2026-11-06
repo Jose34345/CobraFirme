@@ -50,4 +50,10 @@ jobs:
           grep -qi 'User-agent' /tmp/cobra_robots.txt
           curl --max-time 20 --fail --location --silent --show-error "$URL/sitemap.xml" -o /tmp/cobra_sitemap.xml
           grep -q 'cobrafirme-py.onrender.com' /tmp/cobra_sitemap.xml
-          echo 'Smoke HTTP: páginas, recurso y SEO verificados.'
+          curl --max-time 20 --fail --location --silent --show-error "$URL/ahorristas/" -o /tmp/cobra_ahorristas.html
+          grep -q 'Orientarme gratis' /tmp/cobra_ahorristas.html
+          curl --max-time 20 --fail --location --silent --show-error "$URL/observatorio/" -o /tmp/cobra_observatorio.html
+          grep -q 'Todavía no publicamos porcentajes' /tmp/cobra_observatorio.html
+          grep -q '/ahorristas/' /tmp/cobra_sitemap.xml
+          grep -q '/observatorio/' /tmp/cobra_sitemap.xml
+          echo 'Smoke HTTP: páginas, sección de ahorristas, observatorio, recurso y SEO verificados.'
