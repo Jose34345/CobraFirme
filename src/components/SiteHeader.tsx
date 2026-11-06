@@ -15,6 +15,7 @@ export function SiteHeader() {
         <Link onClick={close} href="/#como-funciona">Cómo funciona</Link>
         <Link onClick={close} href="/#diagnostico">Ayuda gratuita</Link>
         <Link onClick={close} href="/migracion-ueno/">Guía Ueno</Link>
+        <Link onClick={close} href="/ahorristas/">Para ahorristas</Link>
         <Link onClick={close} href="/#kits">Kit Integral</Link>
         <Link onClick={close} href="/#preguntas">Preguntas</Link>
         <Link onClick={close} className="nav-mobile-cta" href="/#diagnostico">Empezar gratis <ArrowUpRight size={16}/></Link>

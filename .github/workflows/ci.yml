@@ -28,4 +28,6 @@ jobs:
           test -f out/index.html
           test -f out/migracion-ueno/index.html
           test -f out/privacidad/index.html
+          test -f out/ahorristas/index.html
+          test -f out/observatorio/index.html
           test -f out/recursos/checklist-cobros.csv

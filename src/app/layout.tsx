@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: { default: 'CobráFirme | Tus cobros en orden. Tu negocio en marcha.', template: '%s | CobráFirme' },
   description,
   applicationName: 'CobráFirme',
-  keywords: ['cobros Paraguay', 'transferencias Paraguay', 'QR comercios Paraguay', 'alternativas de cobro', 'Ueno comercios', 'conciliación de pagos'],
+  keywords: ['ahorristas Ueno Paraguay', 'Fondo de Garantía de Depósitos BCP', 'cobros Paraguay', 'transferencias Paraguay', 'QR comercios Paraguay', 'alternativas de cobro', 'Ueno comercios', 'conciliación de pagos'],
   openGraph: { title:'CobráFirme — Tus cobros en orden', description, locale:'es_PY', type:'website', siteName:'CobráFirme' },
   robots: { index:true, follow:true },
 };
