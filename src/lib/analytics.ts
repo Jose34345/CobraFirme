@@ -62,7 +62,7 @@ export function loadAnalytics(): void {
 }
 
 /** Categorías cerradas de una encuesta opcional: sin importe, institución, identificación ni texto libre. */
-import {isValidSaverSurvey,type SaverSurvey} from './ahorristas';
+import {isValidSaverSurvey,type SaverSurvey} from './ahorristas.ts';
 export function trackSaverSurvey(input:SaverSurvey):boolean {
  if(!isValidSaverSurvey(input)||!analyticsConfigured()||!analyticsAllowed()||typeof window==='undefined')return false;
  if(!window.posthog)loadAnalytics();
