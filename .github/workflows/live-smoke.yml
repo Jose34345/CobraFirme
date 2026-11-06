@@ -34,12 +34,29 @@ jobs:
             code=$(curl --max-time 15 -L -s -o /dev/null -w '%{http_code}' \"$URL$path\" || true)
             echo \"$path -> HTTP $code\"
           done
+      - name: Diagnosticar páginas nuevas
+        env:
+          URL: https://cobrafirme-py.onrender.com
+        shell: bash
+        run: |
+          for path in '/ahorristas/' '/observatorio/' '/sitemap.xml'; do
+            code=$(curl --max-time 15 -L -s -o /tmp/pageprobe.html -w '%{http_code}' "$URL$path" || true)
+            bytes=$(wc -c </tmp/pageprobe.html || echo 0)
+            echo "$path -> HTTP $code, bytes=$bytes"
+            if [ "$path" = '/ahorristas/' ]; then
+              grep -o 'Orientarme gratis' /tmp/pageprobe.html | head -1 || echo 'Texto orientador no encontrado'
+            fi
+            if [ "$path" = '/observatorio/' ]; then
+              grep -o 'Todavía no publicamos porcentajes' /tmp/pageprobe.html | head -1 || echo 'Texto observatorio no encontrado'
+            fi
+          done
       - name: Validar rutas y checklist
         env:
           URL: https://cobrafirme-py.onrender.com
         shell: bash
         run: |
           set -euo pipefail
+          trap 'echo "Falló la comprobación de la línea $LINENO"' ERR
           curl --max-time 20 --fail --location --silent --show-error "$URL/migracion-ueno/" -o /tmp/cobra_ueno.html
           grep -q 'Organizá tus próximos pasos' /tmp/cobra_ueno.html
           curl --max-time 20 --fail --location --silent --show-error "$URL/privacidad/" -o /tmp/cobra_privacidad.html
